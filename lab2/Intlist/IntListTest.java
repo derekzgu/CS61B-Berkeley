@@ -66,4 +66,8 @@ public class IntListTest {
         assertEquals(IntList.list(1, 2, 3), A);
     }
 
+    public static void main(String... args) {
+        jh61b.junit.TestRunner.runTests("all", IntListTest.class);
+    }
+
 }
