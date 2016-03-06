@@ -41,9 +41,9 @@ public class NBody {
 
         StdOut.printf("%d\n", pArray.length);
         StdOut.printf("%.2e\n", radius);
-        for (int i = 0; i < pArray.length; i++) {
+        for (Planet aPArray : pArray) {
             StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
-                    pArray[i].xxPos, pArray[i].yyPos, pArray[i].xxVel, pArray[i].yyVel, pArray[i].mass, pArray[i].imgFileName);
+                    aPArray.xxPos, aPArray.yyPos, aPArray.xxVel, aPArray.yyVel, aPArray.mass, aPArray.imgFileName);
         }
     }
 
