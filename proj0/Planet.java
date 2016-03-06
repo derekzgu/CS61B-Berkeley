@@ -83,4 +83,8 @@ public class Planet {
         xxPos += xxVel * interval;
         yyPos += yyVel * interval;
     }
+
+    public void draw() {
+        StdDraw.picture(xxPos, yyPos, imgFileName);
+    }
 }
