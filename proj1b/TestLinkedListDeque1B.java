@@ -3,8 +3,6 @@
  */
 
 import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
-
 import static org.junit.Assert.*;
 
 public class TestLinkedListDeque1B {
@@ -43,7 +41,7 @@ public class TestLinkedListDeque1B {
                 System.out.println("removeLast passes");
             } else if (testFunctionIndex == 6) {
                 assertTrue(solutionLinkedList.size() >= 0);
-                int index = StdRandom.uniform(solutionLinkedList.size());
+                int index = StdRandom.uniform(solutionLinkedList.size()) + 1;
                 System.out.println("Test get " + index);
                 assertEquals(studentLinkedList.get(index), solutionLinkedList.get(index));
                 System.out.println("get passes");

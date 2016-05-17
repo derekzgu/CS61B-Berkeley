@@ -10,22 +10,64 @@ import static org.junit.Assert.*;
 public class TestArrayDeque1B {
 
     @Test
-    public void testAddDelete() {
-        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<Integer>();
-        ArrayDequeSolution<Integer> expected = new ArrayDequeSolution<>();
+    public void randomTest() {
+        int testNumber = 100;
+        int maxTestInteger = 100;
+        StudentArrayDeque<Integer> studentArray = new StudentArrayDeque<>();
+        ArrayDequeSolution<Integer> solutionArray = new ArrayDequeSolution<>();
+        FailureSequence fs = new FailureSequence();
 
-        sad1.removeFirst();
-        expected.removeFirst();
-        assertEquals(expected.size(), sad1.size());
-    }
+        for (int i = 0; i < testNumber; i++) {
+            int testFunctionIndex = StdRandom.uniform(6);
+            if (testFunctionIndex == 0) {
+                int num = StdRandom.uniform(maxTestInteger);
+                studentArray.addFirst(num);
+                solutionArray.addFirst(num);
+                DequeOperation op = new DequeOperation("addFirst", num);
+                fs.addOperation(op);
 
-    @Test
-    public void testResize() {
-        StudentArrayDeque<Integer> sad1 = new StudentArrayDeque<Integer>();
-        int testSize = 20;
-        for (int i = 0; i < testSize; i++) {
-            sad1.addFirst(i);
-            sad1.addLast(testSize - i);
+            } else if (testFunctionIndex == 1) {
+                int num = StdRandom.uniform(maxTestInteger);
+                studentArray.addLast(num);
+                solutionArray.addLast(num);
+                DequeOperation op = new DequeOperation("addLast", num);
+                fs.addOperation(op);
+
+            } else if (testFunctionIndex == 2) {
+                DequeOperation op = new DequeOperation("isEmpty");
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.isEmpty(), solutionArray.isEmpty());
+
+            } else if (testFunctionIndex == 3) {
+                DequeOperation op = new DequeOperation("size");
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.size(), solutionArray.size());
+
+            } else if (testFunctionIndex == 4) {
+                DequeOperation op = new DequeOperation("removeFirst");
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.removeFirst(), solutionArray.removeFirst());
+
+            } else if (testFunctionIndex == 5) {
+                DequeOperation op = new DequeOperation("removeLast");
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.removeLast(), solutionArray.removeLast());
+
+            } else if (testFunctionIndex == 6) {
+                DequeOperation op = new DequeOperation("size");
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.size(), solutionArray.size());
+
+                int testIndex = 0;
+                if (solutionArray.size() != 0) {
+                    testIndex = StdRandom.uniform(solutionArray.size());
+                } else{
+                    testIndex = 0;
+                }
+                op = new DequeOperation("get", testIndex);
+                fs.addOperation(op);
+                assertEquals(fs.toString(), studentArray.get(testIndex), solutionArray.get(testIndex));
+            }
         }
     }
 
