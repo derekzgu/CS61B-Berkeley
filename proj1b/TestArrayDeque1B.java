@@ -29,14 +29,6 @@ public class TestArrayDeque1B {
         }
     }
 
-    @Test
-    public void randomTest() {
-        int testNumber = 100;
-        for (int i = 0; i < testNumber; i++) {
-
-        }
-    }
-
     public static void main(String[] args) {
         jh61b.junit.TestRunner.runTests("all", TestArrayDeque1B.class);
     }
