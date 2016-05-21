@@ -26,4 +26,19 @@ public class Palindrome {
         Deque<Character> characterDeque = wordToDeque(word);
         return isPalindrome(characterDeque);
     }
+
+    private static boolean isPalindrome(Deque<Character> characterDeque, CharacterComparator cc) {
+        int characterDequeSize = characterDeque.size();
+        if (characterDequeSize == 0 || characterDequeSize == 1) {
+            return true;
+        } else {
+            Character firstItem = characterDeque.removeFirst();
+            Character lastItem = characterDeque.removeLast();
+            return cc.equalChars(firstItem, lastItem) && isPalindrome(characterDeque, cc);
+        }
+    }
+
+    public static boolean isPalindrome(String word, CharacterComparator cc) {
+        return isPalindrome(wordToDeque(word), cc);
+    }
 }
