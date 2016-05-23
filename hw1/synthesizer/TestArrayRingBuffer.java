@@ -1,5 +1,7 @@
 package synthesizer;
 import org.junit.Test;
+import org.omg.PortableInterceptor.Interceptor;
+
 import static org.junit.Assert.*;
 
 /** Tests the ArrayRingBuffer class.
@@ -9,7 +11,16 @@ import static org.junit.Assert.*;
 public class TestArrayRingBuffer {
     @Test
     public void someTest() {
-        //ArrayRingBuffer arb = new ArrayRingBuffer(10);
+        ArrayRingBuffer<Integer> arb = new ArrayRingBuffer(10);
+        // arb.dequeue();
+        for (int i = 0; i < 10; i++) {
+            arb.enqueue(i);
+        }
+        assertEquals(0, (int)arb.dequeue());
+        assertEquals(1, (int)arb.peek());
+        arb.enqueue(11);
+        assertEquals(1, (int)arb.dequeue());
+        assertTrue(!arb.isFull());
     }
 
     /** Calls tests for ArrayRingBuffer. */
