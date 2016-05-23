@@ -36,12 +36,17 @@ public class TestPlip {
 
     @Test
     public void testReplicate() {
-
+        Plip p = new Plip(2);
+        Plip pReplicate = p.replicate();
+        assertNotSame(p, pReplicate);
+        assertEquals(1, p.energy(), 0.01);
+        assertEquals(1, pReplicate.energy(), 0.01);
     }
 
-    //@Test
+    @Test
     public void testChoose() {
         Plip p = new Plip(1.2);
+        // if there is no available empties
         HashMap<Direction, Occupant> surrounded = new HashMap<Direction, Occupant>();
         surrounded.put(Direction.TOP, new Impassible());
         surrounded.put(Direction.BOTTOM, new Impassible());
@@ -54,8 +59,18 @@ public class TestPlip {
 
         Action actual = p.chooseAction(surrounded);
         Action expected = new Action(Action.ActionType.STAY);
-
         assertEquals(expected, actual);
+
+        // if the energy is greater than 1
+        surrounded.put(Direction.BOTTOM, new Empty());
+        actual = p.chooseAction(surrounded);
+        expected = new Action(Action.ActionType.REPLICATE, Direction.BOTTOM);
+        assertEquals(expected, actual);
+
+        p.replicate();
+        assertEquals(0.6, p.energy(), 0.01);
+
+        // not be able to test Clorus yet.
     }
 
     public static void main(String[] args) {
