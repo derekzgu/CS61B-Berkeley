@@ -13,37 +13,57 @@ import java.util.List;
 public class Clorus extends Creature {
 
     /** red color. */
-    private int r;
+    private int r = 34;
     /** green color. */
-    private int g;
+    private int g = 0;
     /** blue color. */
-    private int b;
+    private int b = 231;
 
     public Clorus(double e) {
         super("clorus");
+        energy = e;
+    }
+
+    public Clorus() {
+        this(1);
     }
 
     public void attack(Creature c) {
+        energy += c.energy();
     }
 
     public void move() {
-        this.energy -= 0.15;
+        this.energy -= 0.03;
     }
 
     public void stay() {
-        this.energy += 0.2;
+        this.energy -= 0.01;
     }
 
     public Action chooseAction(Map<Direction, Occupant> neighbors) {
-        return new Action(Action.ActionType.STAY);
+        List<Direction> empties = getNeighborsOfType(neighbors, "empty");
+        List<Direction> plips = getNeighborsOfType(neighbors, "plip");
+        if (empties.size() == 0) {
+            return new Action(Action.ActionType.STAY);
+        } else if (plips.size() != 0) {
+            Direction moveDir = HugLifeUtils.randomEntry(plips);
+            return new Action(Action.ActionType.ATTACK, moveDir);
+        } else {
+            Direction moveDir = HugLifeUtils.randomEntry(empties);
+            if (energy >= 1.0) {
+                return new Action(Action.ActionType.REPLICATE, moveDir);
+            } else {
+                return new Action(Action.ActionType.MOVE, moveDir);
+            }
+        }
     }
 
     public Color color() {
-        g = 63;
         return color(r, g, b);
     }
 
     public Clorus replicate() {
-        return this;
+        this.energy /= 2;
+        return new Clorus(this.energy);
     }
 }
