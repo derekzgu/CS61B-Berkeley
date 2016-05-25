@@ -18,6 +18,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
     // some constants
     private final double REFACTOR = 2.0;   // resize factor
 
+    // a better implementation should treat the chain as an ADT too, just by providing interface.
+    // Also, to increase the access speed, we can use tree instead of LinkedList to solve collision
     private class MapNode<K, V> {
         private K key;
         private V value;
@@ -55,6 +57,8 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
         for (int i = 0; i < defaultSize; i++) {
             hashArray[i] = new LinkedList<>();
         }
+        N = 0;
+        M = defaultSize;
     }
 
     @Override
@@ -144,12 +148,32 @@ public class MyHashMap<K, V> implements Map61B<K, V> {
 
     @Override
     public V remove(K key) {
-        throw new UnsupportedOperationException("unsupported remove.");
+        if (key == null) throw new NullPointerException("key is null.");
+
+        int hashEntry = hash(key);
+        MapNode<K, V> node = getNodeLinkedList(hashArray[hashEntry], key);
+        if (node != null) {
+            hashArray[hashEntry].remove(node);
+            N -= 1;
+            return node.value;
+        } else {
+            return null;
+        }
     }
 
     @Override
     public V remove(K key, V value) {
-        throw new UnsupportedOperationException("unsupported remove.");
+        if (key == null) throw new NullPointerException("key is null.");
+
+        int hashEntry = hash(key);
+        MapNode<K, V> node = getNodeLinkedList(hashArray[hashEntry], key);
+        if (node != null && node.value.equals(value)) {
+            hashArray[hashEntry].remove(node);
+            N -= 1;
+            return node.value;
+        } else {
+            return null;
+        }
     }
 
     @Override
