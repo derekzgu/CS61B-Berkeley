@@ -8,12 +8,15 @@ import java.util.ArrayList;
 public class ArrayHeap<T> {
 	private ArrayList<Node> contents = new ArrayList<Node>();
 
+    private int size = 0;
 	/**
 	 * Inserts an item with the given priority value. This is enqueue, or offer.
 	 */
 	public void insert(T item, double priority) {
-
-	}
+        setNode(size + 1, new Node(item, priority));  // add the new item to the end
+        bubbleUp(size + 1);       // bubble up
+        size += 1;                // increase the size
+    }
 
 	/**
 	 * Returns the Node with the smallest priority value, but does not remove it
@@ -21,7 +24,7 @@ public class ArrayHeap<T> {
 	 */
 	public Node peek() {
 		// TODO Complete this method!
-		return null;
+		return getNode(1);   // get the first item.
 	}
 
 	/**
@@ -30,7 +33,13 @@ public class ArrayHeap<T> {
 	 */
 	public Node removeMin() {
 		// TODO Complete this method!
-		return null;
+        Node smallestNode = peek();
+        // switch the smallest one and the last one.
+        setNode(1, getNode(size));
+        setNode(size, null);
+        size -= 1;
+        bubbleDown(1);
+		return smallestNode;
 	}
 
 	/**
@@ -40,6 +49,11 @@ public class ArrayHeap<T> {
 	 */
 	public void changePriority(T item, double priority) {
 		// TODO Complete this method!
+        for (Node n : contents) {
+            if (item.equals(n.item())) {
+                n.myPriority = priority;
+            }
+        }
 	}
 
 	/**
@@ -103,7 +117,7 @@ public class ArrayHeap<T> {
 	 */
 	private int getLeftOf(int i) {
 		// TODO Complete this method!
-		return 0;
+		return 2 * i;
 	}
 
 	/**
@@ -111,7 +125,7 @@ public class ArrayHeap<T> {
 	 */
 	private int getRightOf(int i) {
 		// TODO Complete this method!
-		return 0;
+		return 2 * i + 1;
 	}
 
 	/**
@@ -119,7 +133,7 @@ public class ArrayHeap<T> {
 	 */
 	private int getParentOf(int i) {
 		// TODO Complete this method!
-		return 0;
+		return i / 2;
 	}
 
 	/**
@@ -127,13 +141,15 @@ public class ArrayHeap<T> {
 	 */
 	private void setLeft(int index, Node n) {
 		// TODO Complete this method!
+        setNode(getLeftOf(index), n);
 	}
 
 	/**
 	 * Adds the given node as the right child of the node at the given index.
 	 */
-	private void setRight(int inde, Node n) {
+	private void setRight(int index, Node n) {
 		// TODO Complete this method!
+        setNode(getRightOf(index), n);
 	}
 
 	/**
@@ -141,13 +157,28 @@ public class ArrayHeap<T> {
 	 */
 	private void bubbleUp(int index) {
 		// TODO Complete this method!
+        while ((min(index, getParentOf(index)) == index) && (index != 1)) {
+            swap(index, getParentOf(index));
+            index = getParentOf(index);
+        }
 	}
 
 	/**
 	 * Bubbles down the node currently at the given index.
 	 */
-	private void bubbleDown(int inex) {
+	private void bubbleDown(int index) {
 		// TODO Complete this method!
+
+        if (getNode(getLeftOf(index)) == null && getNode(getRightOf(index)) == null) {
+            return;
+        }
+
+        int smallestChilren = min(getLeftOf(index), getRightOf(index));
+
+        if (min(index, getLeftOf(index)) != index || min(index, getRightOf(index)) != index) {
+            swap(index, smallestChilren);
+            bubbleDown(smallestChilren);
+        }
 	}
 
 	/**
