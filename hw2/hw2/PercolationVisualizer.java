@@ -56,8 +56,7 @@ public class PercolationVisualizer {
             StdDraw.text(.75 * N, -N * .025, "percolates");
         } else {
             StdDraw.text(.75 * N, -N * .025, "does not percolate");
-        }                 
-
+        }
     }
 
     private static void simulateFromFile(String filename) {
