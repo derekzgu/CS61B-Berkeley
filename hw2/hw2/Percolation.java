@@ -79,16 +79,16 @@ public class Percolation {
     private List<Integer> getNeighbor(int row, int col) {
         // up
         List<Integer> neighborList = new ArrayList<>();
-        if (isPosValid(row, col + 1)) {
+        if (isPosValid(row, col + 1) && openSiteSet.contains(xyToInt(row, col + 1))) {
             neighborList.add(xyToInt(row, col + 1));
         }
-        if (isPosValid(row, col - 1)) {
+        if (isPosValid(row, col - 1) && openSiteSet.contains(xyToInt(row, col - 1)))  {
             neighborList.add(xyToInt(row, col - 1));
         }
-        if (isPosValid(row + 1, col)) {
+        if (isPosValid(row + 1, col) && openSiteSet.contains(xyToInt(row + 1, col))) {
             neighborList.add(xyToInt(row + 1, col));
         }
-        if (isPosValid(row - 1, col)) {
+        if (isPosValid(row - 1, col) && openSiteSet.contains(xyToInt(row - 1, col))) {
             neighborList.add(xyToInt(row - 1, col));
         }
         return neighborList;
