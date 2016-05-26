@@ -66,7 +66,10 @@ public class Percolation {
 
     // unit testing (not required)
     public static void main(String[] args) {
-
+        PercolationStats stat = new PercolationStats(60, 1000);
+        System.out.println("The mean is " + stat.mean());
+        System.out.println("The stddev is " + stat.stddev());
+        System.out.println("The 95% interval is " + stat.confidenceLow() + " to " + stat.confidenceHigh());
     }
 
 
