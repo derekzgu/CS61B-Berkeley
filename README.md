@@ -1,2 +1,2 @@
 # CS61b-Berkeley
-CS61B-Berkeley Spring 2016
+Self-paced CS61B-Berkeley Spring 2016
