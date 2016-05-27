@@ -49,9 +49,15 @@ public class ArrayHeap<T> {
 	 */
 	public void changePriority(T item, double priority) {
 		// TODO Complete this method!
-        for (Node n : contents) {
-            if (item.equals(n.item())) {
-                n.myPriority = priority;
+        for (int i = 1; i <= size; i++) {
+            if (item.equals(getNode(i).item())) {
+                getNode(i).myPriority = priority;
+                if (min(i, getParentOf(i)) == i) {
+                    bubbleUp(i);
+                } else {
+                    bubbleDown(i);
+                }
+                return;
             }
         }
 	}
