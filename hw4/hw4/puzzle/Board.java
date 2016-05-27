@@ -63,6 +63,17 @@ public class Board {
         return true;
     }
 
+    public int hashCode() {
+        int hash = 0;
+        int factor = 31;
+        for (int i = 0; i < size(); i++) {
+            for (int j = 0; j < size(); j++) {
+                hash = hash * factor + tileAt(i, j);
+            }
+        }
+        return hash;
+    }
+
     /** Returns the string representation of the board. 
       * Uncomment this method. */
     public String toString() {
