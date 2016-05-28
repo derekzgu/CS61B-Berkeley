@@ -15,7 +15,7 @@ public class Solver {
     }
 
     public int moves() {
-        return solutionList.size();
+        return solutionList.size() - 1;
     }
 
     public Iterable<Board> solution() {
@@ -36,50 +36,57 @@ public class Solver {
         Board initial = new Board(tiles);
         Solver solver = new Solver(initial);
         StdOut.println("Minimum number of moves = " + solver.moves());
-        for (Board board : solver.solution()) {
-            StdOut.println(board);
-       }
+        if (args.length > 1) {
+            for (Board board : solver.solution()) {
+                StdOut.println(board);
+            }
+        }
     }
 
     // helper method
     private List<Board> AStarSearch(Board initial) {
-        List<Board> solution = new ArrayList<>();
         MinPQ<SearchNode> helperPQ = new MinPQ<>();
         Set<Board> exploredSet = new HashSet<>();
-
+        List<Board> solution = new ArrayList<>();
+        solution.add(initial);
         int moves = 0;
-        SearchNode initialNode = new SearchNode(initial, moves);
+        SearchNode initialNode = new SearchNode(initial, moves, solution);
         helperPQ.insert(initialNode);
 
         while (!helperPQ.isEmpty()) {
             SearchNode n = helperPQ.delMin();
             Board currentBoard = n.getBoard();
             moves = n.getMoves();
-            solution.add(currentBoard);
             if (currentBoard.isGoal()) {
-                return solution;
+                return n.getRoute();
             }
             if (exploredSet.contains(currentBoard)) {
                 continue;
             }
             exploredSet.add(currentBoard);
             for (Board b : BoardUtils.neighbors(currentBoard)) {
-                helperPQ.insert(new SearchNode(b, moves + 1));
+                if (!exploredSet.contains(b)) {
+                    List<Board> currentRoute = n.getCopyRoute();   // this function return a copy
+                    currentRoute.add(b);
+                    helperPQ.insert(new SearchNode(b, moves + 1, currentRoute));
+                }
             }
         }
         return null;
     }
 
     // a solver node
-    private class SearchNode implements Comparator<SearchNode> {
+    private class SearchNode implements Comparable<SearchNode> {
         private Board b;
         private int priority;
         private int moves;
+        private List<Board> route;
 
-        public SearchNode(Board b, int moves) {
+        public SearchNode(Board b, int moves, List<Board> route) {
             this.b = b;
             priority = moves + b.manhattan();  // compute once and cache it
             this.moves = moves;
+            this.route = route;  // route must be created on copy!!!
         }
 
         public Board getBoard() {
@@ -90,9 +97,19 @@ public class Solver {
             return moves;
         }
 
-        public int compare(SearchNode n1, SearchNode n2) {
-            return n1.priority - n2.priority;
+        public int compareTo(SearchNode n) {
+            return this.priority - n.priority;
         }
+
+        // this method return a copy of current route
+        public List<Board> getCopyRoute() {
+            return new ArrayList<>(route);
+        }
+
+        public List<Board> getRoute() {
+            return route;
+        }
+
     }
 
 }
