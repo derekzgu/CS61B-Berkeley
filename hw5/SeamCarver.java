@@ -9,10 +9,19 @@ import java.util.Arrays;
 public class SeamCarver {
 
     private Picture picture;
+    private boolean transpose;
+    private double[][] energyMatrix;
 
     public SeamCarver(Picture picture) {
         // copy a new picture as the private local variable
         this.picture = new Picture(picture);
+        transpose = false;
+        energyMatrix = new double[picture.width()][picture.height()];
+        for (int col = 0; col < picture.width(); col++) {
+            for (int row = 0; row < picture.height(); row++) {
+                energyMatrix[col][row] = calculateEnergyAt(col, row);
+            }
+        }
     }
 
     // current picture
@@ -22,16 +31,82 @@ public class SeamCarver {
 
     // width of current picture
     public int width() {
+        if (transpose) {
+            return picture.height();
+        }
         return picture.width();
     }
 
     // height of current picture
     public int height() {
+        if (transpose) {
+            return picture.width();
+        }
         return picture.height();
     }
 
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
+        if (transpose) {
+            return energyMatrix[y][x];
+        }
+        return energyMatrix[x][y];
+    }
+
+    // sequence of indices for horizontal seam
+    public int[] findHorizontalSeam() {
+        transpose = true;
+        int[] result = findVerticalSeam();
+        transpose = false;
+        return result;
+    }
+
+    // sequence of indices for vertical seam
+    public int[] findVerticalSeam() {
+        // initialize the frontier to be
+        SeamSearchNode[] frontier = new SeamSearchNode[this.width()];
+        for (int i = 0; i < width(); i++) {
+            frontier[i] = new SeamSearchNode(energy(i, 0));
+            frontier[i].setPath(i, 0);
+        }
+
+        for (int row = 1; row < height(); row++) {
+            // it is very important that we create a new frontier each time
+            SeamSearchNode[] newFrontier = new SeamSearchNode[this.width()];
+            for (int col = 0; col < width(); col++) {
+                int start, end;
+                if (col > 0) {
+                    start = col - 1;
+                } else {
+                    start = 0;
+                }
+                if (col < width() - 1) {
+                    end = col + 1;
+                } else {
+                    end = width() - 1;
+                }
+                SeamSearchNode smallestParent = selectMinSeamSearchNode(frontier, start, end);
+                newFrontier[col] = smallestParent.accumulate(col, row);
+            }
+            frontier = newFrontier;
+        }
+        // select the min from frontier
+        SeamSearchNode smallestParent = selectMinSeamSearchNode(frontier, 0, width() - 1);
+        return smallestParent.getPath();
+    }
+
+    // remove horizontal seam from picture
+    public void removeHorizontalSeam(int[] seam) {
+        picture = SeamRemover.removeHorizontalSeam(picture, seam);
+    }
+
+    // remove vertical seam from picture
+    public void removeVerticalSeam(int[] seam) {
+        picture = SeamRemover.removeVerticalSeam(picture, seam);
+    }
+
+    // private helper method
+    private double calculateEnergyAt(int x, int y) {
         int leftOfX = x - 1;
         if (leftOfX < 0) {
             leftOfX = this.width() - 1;
@@ -53,54 +128,6 @@ public class SeamCarver {
         return deltaX + deltaY;
     }
 
-    // sequence of indices for horizontal seam
-    public int[] findHorizontalSeam() {
-        return null;
-    }
-
-    // sequence of indices for vertical seam
-    public int[] findVerticalSeam() {
-        // initialize the frontier to be
-        SeamSearchNode[] frontier = new SeamSearchNode[this.width()];
-        SeamSearchNode[] newFrontier = new SeamSearchNode[this.width()];
-        for (int i = 0; i < width(); i++) {
-            frontier[i] = new SeamSearchNode(energy(i, 0));
-            frontier[i].setPath(i, 0);
-        }
-
-        for (int row = 1; row < height(); row++) {
-            for (int col = 0; col < width(); col++) {
-                int start, end;
-                if (col > 0) {
-                    start = col - 1;
-                } else {
-                    start = 0;
-                }
-                if (col < width() - 1) {
-                    end = col + 1;
-                } else {
-                    end = width() - 1;
-                }
-                SeamSearchNode smallestParent = selectMinSeamSearchNode(frontier, start, end);
-                newFrontier[col] = smallestParent.accmulate(col, row, energy(col, row));
-            }
-            frontier = newFrontier;
-        }
-        // select the min from frontier
-        return selectMinSeamSearchNode(frontier, 0, width() - 1).getPath();
-    }
-
-    // remove horizontal seam from picture
-    public void removeHorizontalSeam(int[] seam) {
-        picture = SeamRemover.removeHorizontalSeam(picture, seam);
-    }
-
-    // remove vertical seam from picture
-    public void removeVerticalSeam(int[] seam) {
-        picture = SeamRemover.removeVerticalSeam(picture, seam);
-    }
-
-    // private helper method
     private double calculateColorGradient(Color c1, Color c2) {
         int bGradient = c1.getBlue() - c2.getBlue();
         int rGradient = c1.getRed() - c2.getRed();
@@ -140,16 +167,20 @@ public class SeamCarver {
             return path;
         }
 
+        public double getEnergy() {
+            return accumulateEnergy;
+        }
+
         public int compareTo(SeamSearchNode n) {
-            if (accumulateEnergy < n.accumulateEnergy) return -1;
-            else if (accumulateEnergy > n.accumulateEnergy) return 1;
+            if (accumulateEnergy < n.getEnergy()) return -1;
+            else if (accumulateEnergy > n.getEnergy()) return 1;
             else return 0;
         }
 
         // takes a node, return a new node which add the current col to the path
-        public SeamSearchNode accmulate(int col, int row, double energy) {
+        public SeamSearchNode accumulate(int col, int row) {
             SeamSearchNode newNode = new SeamSearchNode(this);
-            newNode.addEnergy(energy);
+            newNode.addEnergy(energy(col, row));
             newNode.setPath(col, row);
             return newNode;
         }
