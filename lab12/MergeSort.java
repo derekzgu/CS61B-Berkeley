@@ -1,4 +1,6 @@
 import edu.princeton.cs.algs4.*;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class MergeSort {
     /**
@@ -77,14 +79,29 @@ public class MergeSort {
         return helperQueue.dequeue();
     }
 
-    public static void main(String[] args) {
+    private <Item extends Comparable> boolean isQueueSorted(Queue<Item> q) {
+        Item first = null;
+        for (Item i : q) {
+            if (first != null && first.compareTo(i) > 0) {
+                return false;
+            }
+            first = i;
+        }
+        return true;
+    }
+
+    @Test
+    public void testMergeSort() {
         Queue<Integer> students = new Queue<>();
         int testNum = 21;
         for (int i = 0; i < testNum; i++) {
-            students.enqueue(StdRandom.uniform(100));
+            students.enqueue(StdRandom.uniform(10000));
         }
         Queue<Integer> sortedStudent = mergeSort(students);
-        System.out.println("Original: " + students);
-        System.out.println("Sorted: " + sortedStudent);
+        assertTrue(isQueueSorted(sortedStudent));
+    }
+
+    public static void main(String[] args) {
+        jh61b.junit.TestRunner.runTests(MergeSort.class);
     }
 }
