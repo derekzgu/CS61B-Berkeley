@@ -93,9 +93,9 @@ public class MergeSort {
     @Test
     public void testMergeSort() {
         Queue<Integer> students = new Queue<>();
-        int testNum = 21;
+        int testNum = 10000;
         for (int i = 0; i < testNum; i++) {
-            students.enqueue(StdRandom.uniform(10000));
+            students.enqueue(StdRandom.uniform(100));
         }
         Queue<Integer> sortedStudent = mergeSort(students);
         assertTrue(isQueueSorted(sortedStudent));
