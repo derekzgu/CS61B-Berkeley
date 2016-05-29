@@ -1,6 +1,7 @@
 import java.util.Observable;
-/** 
- *  @author Josh Hug
+
+/**
+ * @author Josh Hug
  */
 
 public class MazeDepthFirstPaths extends MazeExplorer {
@@ -12,7 +13,7 @@ public class MazeDepthFirstPaths extends MazeExplorer {
     private int s;
     private int t;
     private boolean targetFound = false;
-    private Maze maze; 
+    private Maze maze;
 
 
     public MazeDepthFirstPaths(Maze m, int sourceX, int sourceY, int targetX, int targetY) {
@@ -21,7 +22,7 @@ public class MazeDepthFirstPaths extends MazeExplorer {
         s = maze.xyTo1D(sourceX, sourceY);
         t = maze.xyTo1D(targetX, targetY);
         distTo[s] = 0;
-        edgeTo[s] = s;        
+        edgeTo[s] = s;
     }
 
     private void dfs(int v) {
@@ -44,7 +45,7 @@ public class MazeDepthFirstPaths extends MazeExplorer {
                 dfs(w);
                 if (targetFound) {
                     return;
-                }                
+                }
             }
         }
     }

@@ -1,5 +1,5 @@
-/** 
- *  @author Josh Hug
+/**
+ * @author Josh Hug
  */
 
 public class AStarDemo {
@@ -8,8 +8,8 @@ public class AStarDemo {
     public static void main(String[] args) {
         Maze maze = new Maze("maze.config");
 
-        int startX = 1; 
-        int startY = 1; 
+        int startX = 1;
+        int startY = 1;
         int targetX = maze.N();
         int targetY = maze.N();
 

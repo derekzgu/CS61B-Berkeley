@@ -1,5 +1,5 @@
-/** 
- *  @author Josh Hug
+/**
+ * @author Josh Hug
  */
 
 public class CyclesDemo {
