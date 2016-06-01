@@ -1,13 +1,15 @@
-/** Utility class for manipulating sequences of bits. DO NOT MODIFY THIS FILE!!!
-  * 
-  * BitSequences are immutable.
-  *
-  * 
-  * DO NOT MODIFY THIS FILE.
-  *
-  *
-  * 
-  * Josh Hug: April 30, 2016 */
+/**
+ * Utility class for manipulating sequences of bits. DO NOT MODIFY THIS FILE!!!
+ * <p>
+ * BitSequences are immutable.
+ * <p>
+ * <p>
+ * DO NOT MODIFY THIS FILE.
+ * <p>
+ * <p>
+ * <p>
+ * Josh Hug: April 30, 2016
+ */
 
 import java.util.BitSet;
 import java.util.List;
@@ -96,7 +98,7 @@ public class BitSequence implements Serializable {
         int hashCode = 1;
         for (int i = 0; i < length(); i += 1) {
             hashCode *= 31;
-        }        
+        }
         return hashCode;
     }
 
@@ -118,13 +120,13 @@ public class BitSequence implements Serializable {
     }
 
     /** Returns a new bit sequence corresponding to the first N bits.
-      * Runs in constant time. New bit sequence contains a pointer to this
-      * sequence's bits, so use the copy constructor on the returned BitSequence if
-      * memory is more important than speed. Don't do this in HW7. */
+     * Runs in constant time. New bit sequence contains a pointer to this
+     * sequence's bits, so use the copy constructor on the returned BitSequence if
+     * memory is more important than speed. Don't do this in HW7. */
     public BitSequence firstNBits(int N) {
         if (N > numBits) {
             throw new IllegalArgumentException("More bits requested than present in sequence, "
-                                               + "requested " + N + ", but have " + numBits + ".");
+                    + "requested " + N + ", but have " + numBits + ".");
         }
 
         BitSequence firstN = new BitSequence();
@@ -136,13 +138,13 @@ public class BitSequence implements Serializable {
     }
 
     /** Returns a new bit sequence corresponding to all but the first N bits.
-      * Runs in constant time. New bit sequence contains a pointer to this
-      * sequence's bits, so use the copy constructor on the returned BitSequence if
-      * memory is more important than speed. Don't do this in HW7. */
+     * Runs in constant time. New bit sequence contains a pointer to this
+     * sequence's bits, so use the copy constructor on the returned BitSequence if
+     * memory is more important than speed. Don't do this in HW7. */
     public BitSequence allButFirstNBits(int N) {
         if (N > numBits) {
             throw new IllegalArgumentException("Requested allButFirstNBits, where N is equal to "
-                                               + N + ", but have " + numBits + ".");
+                    + N + ", but have " + numBits + ".");
         }
 
         BitSequence allButFirstN = new BitSequence();
@@ -154,18 +156,18 @@ public class BitSequence implements Serializable {
     }
 
     /** Returns a new bit sequence corresponding to the last N bits.
-      * Runs in constant time. New bit sequence contains a pointer to this
-      * sequence's bits, so use the copy constructor on the returned BitSequence if
-      * memory is more important than speed. Don't do this in HW7. */
+     * Runs in constant time. New bit sequence contains a pointer to this
+     * sequence's bits, so use the copy constructor on the returned BitSequence if
+     * memory is more important than speed. Don't do this in HW7. */
     public BitSequence lastNBits(int N) {
         if (N > numBits) {
             throw new IllegalArgumentException("More bits requested than present in sequence, "
-                                               + "requested " + N + ", but have " + numBits + ".");
+                    + "requested " + N + ", but have " + numBits + ".");
         }
 
         BitSequence lastN = new BitSequence();
         lastN.bits = this.bits;
-        lastN.numBits = N;      
+        lastN.numBits = N;
         lastN.lastBitNum = this.lastBitNum;
         lastN.firstBitNum = this.lastBitNum - N;
 
@@ -191,7 +193,7 @@ public class BitSequence implements Serializable {
     }
 
     /** Do not make this method public. This is a utility method for
-      * implementers only. BitSequence is, and should remain, immutable! */
+     * implementers only. BitSequence is, and should remain, immutable! */
     private void append(int bit) {
         if (bit == 1) {
             bits.set(numBits, true);
@@ -201,12 +203,12 @@ public class BitSequence implements Serializable {
     }
 
     /** Do not make this method public. This is a utility method for
-      * implementers only. BitSequence is, and should remain, immutable! */
+     * implementers only. BitSequence is, and should remain, immutable! */
     private void append(BitSequence bs) {
         for (int i = 0; i < bs.numBits; i += 1) {
             append(bs.bitAt(i));
         }
-    }    
+    }
 
     public static void main(String[] args) {
         BitSequence bs = new BitSequence();
@@ -214,5 +216,5 @@ public class BitSequence implements Serializable {
         System.out.println(bs.toString());
         bs = bs.appended(1);
         System.out.println(bs.toString());
-    }    
+    }
 } 
