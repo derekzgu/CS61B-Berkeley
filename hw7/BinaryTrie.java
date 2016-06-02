@@ -14,7 +14,7 @@ public class BinaryTrie implements Serializable {
     public BinaryTrie(Map<Character, Integer> frequencyTable) {
         PriorityQueue<Node> helperPQ = transform(frequencyTable);
         root = construct(helperPQ);
-        lookupTable = new HashMap<>();
+        lookupTable = null;
     }
 
     public Match longestPrefixMatch(BitSequence querySequence) {
@@ -28,11 +28,19 @@ public class BinaryTrie implements Serializable {
                 currentNode = currentNode.right;
             }
         }
-        return null;
+        if (currentNode.isLeaf()) {
+            // always create a new sequence
+            return new Match(new BitSequence(querySequence), currentNode.getCharacter());
+        } else {
+            return null;
+        }
     }
 
     public Map<Character, BitSequence> buildLookupTable() {
-        inOrderTraverse(new BitSequence(), root);
+        if (lookupTable == null) {
+            lookupTable = new HashMap<>();
+            inOrderTraverse(new BitSequence(), root);
+        }
         return this.lookupTable;
     }
 

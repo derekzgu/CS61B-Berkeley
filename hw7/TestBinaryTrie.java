@@ -89,6 +89,6 @@ public class TestBinaryTrie {
     }
 
     public static void main(String[] args) {
-        jh61b.junit.textui.runClasses(TestBinaryTrie.class);
+        jh61b.junit.TestRunner.runTests("failed", TestBinaryTrie.class);
     }
 } 
