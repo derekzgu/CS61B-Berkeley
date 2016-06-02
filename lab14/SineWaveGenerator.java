@@ -1,17 +1,17 @@
 public class SineWaveGenerator implements Generator {
-	private double frequency;
-	private int state;	
+    private double frequency;
+    private int state;
 
-	public SineWaveGenerator(double frequency) {
-		state = 0;
-		this.frequency = frequency;
-	}
+    public SineWaveGenerator(double frequency) {
+        state = 0;
+        this.frequency = frequency;
+    }
 
-	public double next() {
-		state = (state + 1);
-		double period = StdAudio.SAMPLE_RATE / frequency;
-		return Math.sin(state * 2 * Math.PI / period);
-	}
+    public double next() {
+        state = (state + 1);
+        double period = StdAudio.SAMPLE_RATE / frequency;
+        return Math.sin(state * 2 * Math.PI / period);
+    }
 }
 
 /* How it works (requires some EE16 knowledge): Sample rate is 44100 Hz.
