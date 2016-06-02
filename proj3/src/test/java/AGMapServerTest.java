@@ -1,4 +1,5 @@
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.junit.Before;
 
@@ -17,6 +18,7 @@ public class AGMapServerTest {
     /**
      * Initializes the student MapServer statically.
      * Reads in the serialized <code>List</code> of TestParams.
+     *
      * @throws Exception
      */
     @Before
@@ -36,7 +38,7 @@ public class AGMapServerTest {
             Object o1 = m1.get(key);
             Object o2 = m2.get(key);
             if (o1 instanceof Double) {
-                assertTrue(err, Math.abs((Double)o1 - (Double)o2) < doubleThreshhold);
+                assertTrue(err, Math.abs((Double) o1 - (Double) o2) < doubleThreshhold);
             } else {
                 assertEquals(err, o1, o2);
             }
@@ -46,6 +48,7 @@ public class AGMapServerTest {
     /**
      * Test the rastering functionality of the student code, by writing the ByteArrayOutputStream
      * to a byte[] array and comparing it with the staff result byte-wise.
+     *
      * @throws Exception
      */
     @Test
@@ -63,6 +66,7 @@ public class AGMapServerTest {
 
     /**
      * Check the student raster output parameters against the staff output parameters.
+     *
      * @throws Exception
      */
     @Test
@@ -78,6 +82,7 @@ public class AGMapServerTest {
 
     /**
      * Test the routefinding functionality by comparing the node id list item by item.
+     *
      * @throws Exception
      */
     @Test
@@ -92,6 +97,7 @@ public class AGMapServerTest {
     /**
      * Test the route raster the same way the map raster is tested, except with the route pre-set
      * before making the call to raster.
+     *
      * @throws Exception
      */
     @Test
@@ -111,6 +117,7 @@ public class AGMapServerTest {
 
     /**
      * Test Autocomplete for each prefix, comparing the sets of outputs against each other.
+     *
      * @throws Exception
      */
     @Test
@@ -130,6 +137,7 @@ public class AGMapServerTest {
      * Test location search by full search string, comparing the output lists against each other
      * element by element; note that we assume the most reasonable construction of each of these
      * lists, that is, that they are in order of the locations as they appear in the OSM file.
+     *
      * @throws Exception
      */
     @Test

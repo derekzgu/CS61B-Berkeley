@@ -1,5 +1,8 @@
-import java.awt.Color;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Base64;
 import java.util.HashMap;
@@ -11,12 +14,15 @@ import java.util.Set;
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
 
+import javax.imageio.ImageIO;
+
 import static spark.Spark.*;
 
 /**
  * This MapServer class is the entry point for running the JavaSpark web server for the BearMaps
  * application project, receiving API calls, handling the API call processing, and generating
  * requested images and routes.
+ *
  * @author Alan Yao
  */
 public class MapServer {
@@ -27,15 +33,25 @@ public class MapServer {
      */
     public static final double ROOT_ULLAT = 37.892195547244356, ROOT_ULLON = -122.2998046875,
             ROOT_LRLAT = 37.82280243352756, ROOT_LRLON = -122.2119140625;
-    /** Each tile is 256x256 pixels. */
+    /**
+     * Each tile is 256x256 pixels.
+     */
     public static final int TILE_SIZE = 256;
-    /** HTTP failed response. */
+    /**
+     * HTTP failed response.
+     */
     private static final int HALT_RESPONSE = 403;
-    /** Route stroke information: typically roads are not more than 5px wide. */
+    /**
+     * Route stroke information: typically roads are not more than 5px wide.
+     */
     public static final float ROUTE_STROKE_WIDTH_PX = 5.0f;
-    /** Route stroke information: Cyan with half transparency. */
+    /**
+     * Route stroke information: Cyan with half transparency.
+     */
     public static final Color ROUTE_STROKE_COLOR = new Color(108, 181, 230, 200);
-    /** The tile images are in the IMG_ROOT folder. */
+    /**
+     * The tile images are in the IMG_ROOT folder.
+     */
     private static final String IMG_ROOT = "img/";
     /**
      * The OSM XML file path. Downloaded from <a href="http://download.bbbike.org/osm/">here</a>
@@ -51,7 +67,7 @@ public class MapServer {
      * w -> user viewport window width in pixels,<br> h -> user viewport height in pixels.
      **/
     private static final String[] REQUIRED_RASTER_REQUEST_PARAMS = {"ullat", "ullon", "lrlat",
-        "lrlon", "w", "h"};
+            "lrlon", "w", "h"};
     /**
      * Each route request to the server will have the following parameters
      * as keys in the params map.<br>
@@ -59,7 +75,7 @@ public class MapServer {
      * end_lat -> end point latitude, <br>end_lon -> end point longitude.
      **/
     private static final String[] REQUIRED_ROUTE_REQUEST_PARAMS = {"start_lat", "start_lon",
-        "end_lat", "end_lon"};
+            "end_lat", "end_lon"};
     /* Define any static variables here. Do not define any instance variables of MapServer. */
     private static GraphDB g;
 
@@ -143,12 +159,12 @@ public class MapServer {
     /**
      * Validate & return a parameter map of the required request parameters.
      * Requires that all input parameters are doubles.
-     * @param req HTTP Request
+     *
+     * @param req            HTTP Request
      * @param requiredParams TestParams to validate
      * @return A populated map of input parameter to it's numerical value.
      */
-    private static HashMap<String, Double> getRequestParams(
-            spark.Request req, String[] requiredParams) {
+    private static HashMap<String, Double> getRequestParams(spark.Request req, String[] requiredParams) {
         Set<String> reqParams = req.queryParams();
         HashMap<String, Double> params = new HashMap<>();
         for (String param : requiredParams) {
@@ -170,22 +186,23 @@ public class MapServer {
     /**
      * Handles raster API calls, queries for tiles and rasters the full image. <br>
      * <p>
-     *     The rastered photo must have the following properties:
-     *     <ul>
-     *         <li>Has dimensions of at least w by h, where w and h are the user viewport width
-     *         and height.</li>
-     *         <li>The tiles collected must cover the most longitudinal distance per pixel
-     *         possible, while still covering less than or equal to the amount of
-     *         longitudinal distance per pixel in the query box for the user viewport size. </li>
-     *         <li>Contains all tiles that intersect the query bounding box that fulfill the
-     *         above condition.</li>
-     *         <li>The tiles must be arranged in-order to reconstruct the full image.</li>
-     *         <li>If a current route exists, lines of width ROUTE_STROKE_WIDTH_PX and of color
-     *         ROUTE_STROKE_COLOR are drawn between all nodes on the route in the rastered photo.
-     *         </li>
-     *     </ul>
-     *     Additional image about the raster is returned and is to be included in the Json response.
+     * The rastered photo must have the following properties:
+     * <ul>
+     * <li>Has dimensions of at least w by h, where w and h are the user viewport width
+     * and height.</li>
+     * <li>The tiles collected must cover the most longitudinal distance per pixel
+     * possible, while still covering less than or equal to the amount of
+     * longitudinal distance per pixel in the query box for the user viewport size. </li>
+     * <li>Contains all tiles that intersect the query bounding box that fulfill the
+     * above condition.</li>
+     * <li>The tiles must be arranged in-order to reconstruct the full image.</li>
+     * <li>If a current route exists, lines of width ROUTE_STROKE_WIDTH_PX and of color
+     * ROUTE_STROKE_COLOR are drawn between all nodes on the route in the rastered photo.
+     * </li>
+     * </ul>
+     * Additional image about the raster is returned and is to be included in the Json response.
      * </p>
+     *
      * @param params Map of the HTTP GET request's query parameters - the query bounding box and
      *               the user viewport width and height.
      * @param os     An OutputStream that the resulting png image should be written to.
@@ -203,6 +220,31 @@ public class MapServer {
      */
     public static Map<String, Object> getMapRaster(Map<String, Double> params, OutputStream os) {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
+
+
+        // get a list of string of images
+        String[] images = {"11.png", "12.png", "13.png", "14.png"};
+        // write the image to the file
+        int width = 256 * 2, height = 256 * 2;
+        BufferedImage im = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics g = im.getGraphics();
+        try {
+            int x = 0, y = 0;
+            for (String image : images) {
+                BufferedImage bi = ImageIO.read(new File(IMG_ROOT + image));
+                g.drawImage(bi, x, y, null);
+                x += bi.getWidth();
+                if (x > im.getWidth() - 1) {
+                    x = 0;
+                    y += bi.getHeight();
+                }
+            }
+            ImageIO.write(im, "png", os);
+            rasteredImageParams.put("query_success", true);
+        } catch (IOException e) {
+            System.out.println("The image is not present in the img/ folder.");
+        }
+
         return rasteredImageParams;
     }
 
@@ -213,6 +255,7 @@ public class MapServer {
      * The route should start from the closest node to the start point and end at the closest node
      * to the endpoint. Distance is defined as the euclidean between two points (lon1, lat1) and
      * (lon2, lat2).
+     *
      * @param params from the API call described in REQUIRED_ROUTE_REQUEST_PARAMS
      * @return A LinkedList of node ids from the start of the route to the end.
      */
@@ -228,6 +271,7 @@ public class MapServer {
 
     /**
      * In linear time, collect all the names of OSM locations that prefix-match the query string.
+     *
      * @param prefix Prefix string to be searched for. Could be any case, with our without
      *               punctuation.
      * @return A <code>List</code> of the full names of locations whose cleaned name matches the
@@ -240,6 +284,7 @@ public class MapServer {
     /**
      * Collect all locations that match a cleaned <code>locationName</code>, and return
      * information about each node that matches.
+     *
      * @param locationName A full name of a location searched for.
      * @return A list of locations whose cleaned name matches the
      * cleaned <code>locationName</code>, and each location is a map of parameters for the Json
