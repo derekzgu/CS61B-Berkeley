@@ -75,7 +75,7 @@ public class BinaryTrie implements Serializable {
         }
     }
 
-    private class Node implements Comparable<Node> {
+    private class Node implements Comparable<Node>, Serializable {
 
         private Character c;      // if c is null, then it is not a leaf node
         private Integer frequency;
