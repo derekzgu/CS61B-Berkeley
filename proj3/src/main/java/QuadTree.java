@@ -1,8 +1,4 @@
-import java.util.ArrayDeque;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by chizhang on 6/2/16.
@@ -34,7 +30,10 @@ public class QuadTree {
             if (currentDistancePerPixel <= queryDistancePerPixel) break;
         }
         // given the depth, find all the tiles which are intersect with query
-        return bfsTraverse(queryUpperLeft, queryLowerRight, depth);
+        List<QuadNode> result = bfsTraverse(queryUpperLeft, queryLowerRight, depth);
+        // permute the result so that it can be concatenated in correct order
+        Collections.sort(result);
+        return result;
     }
 
     // some helper methods

@@ -1,7 +1,7 @@
 /**
  * Created by chizhang on 6/2/16.
  */
-public class QuadNode {
+public class QuadNode implements Comparable<QuadNode> {
     // position
     private Position upperLeftPosition;
     private Position lowerRightPosition;
@@ -74,6 +74,14 @@ public class QuadNode {
             case 4: return lowerRightChild;
             default: return null;
         }
+    }
+
+    // compare the quadNode based on upperLeft position, we only compare QuadNode with the same depth
+    @Override
+    public int compareTo(QuadNode n) {
+        if (this.depth != n.depth)
+            throw new IllegalArgumentException("QuadNode can only be compared when they have the same depth");
+        return this.upperLeftPosition.compareTo(n.upperLeftPosition);
     }
 
 }

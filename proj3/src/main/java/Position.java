@@ -1,7 +1,7 @@
 /**
  * Created by chizhang on 6/2/16.
  */
-public class Position {
+public class Position implements Comparable<Position> {
     private Double longitude;   // x of axis
     private Double latitude;    // y of axis
 
@@ -54,5 +54,23 @@ public class Position {
                 || p2UpperLeft.getLatitude() < p1LowerRight.getLatitude())
             return false;
         return true;
+    }
+
+    public static boolean hasSameLatitude(Position p1, Position p2) {
+        return p1.latitude.equals(p2.latitude);
+    }
+
+    // the one with less latitude should be greater, if equal, the one with greater longitude should be greater
+    @Override
+    public int compareTo(Position p) {
+        double latDifference = this.latitude - p.latitude;
+        if (latDifference < 0) return 1;
+        else if (latDifference > 0) return -1;
+        else {
+            double lonDifference = this.longitude - p.longitude;
+            if (lonDifference < 0) return -1;
+            else if (lonDifference > 0) return 1;
+            else return 0;
+        }
     }
 }

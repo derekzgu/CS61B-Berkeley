@@ -224,24 +224,35 @@ public class MapServer {
      */
     public static Map<String, Object> getMapRaster(Map<String, Double> params, OutputStream os) {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
-        // collect the result of QuadNode list
+        // collect the result of QuadNode list in sorted order
         List<QuadNode> result = qTree.respond(params);
-        String[] tests = new String[result.size()];
+        String[] images = new String[result.size()];
         int index = 0;
         for (QuadNode q : result) {
-            tests[index] = q.getPicture();
+            images[index] = q.getPicture() + ".png";
             index += 1;
         }
-        for (String t : tests) {
-            System.out.println(t);
+        // get rastered image boundary
+        Position rasterUpperLeft = result.get(0).getUpperLeftPosition();
+        Position rasterLoweRight = result.get(result.size() - 1).getLowerRightPosition();
+        rasteredImageParams.put("raster_ul_lon", rasterUpperLeft.getLongitude());
+        rasteredImageParams.put("raster_ul_lat", rasterUpperLeft.getLatitude());
+        rasteredImageParams.put("raster_lr_lon", rasterLoweRight.getLongitude());
+        rasteredImageParams.put("raster_lr_lat", rasterLoweRight.getLatitude());
+        // get width and height
+        int i;
+        for (i = 1; i < result.size(); i++) {
+            if (!Position.hasSameLatitude(result.get(i).getUpperLeftPosition(), result.get(i - 1).getUpperLeftPosition()))
+                break;
         }
-        System.out.println(params.get("w"));
-        System.out.println(params.get("h"));
+        assert result.size() % i == 0;
+        int width = TILE_SIZE * i, height = TILE_SIZE * result.size() / i;
+        rasteredImageParams.put("raster_width", width);
+        rasteredImageParams.put("raster_height", height);
+        // get depth
+        rasteredImageParams.put("depth", result.get(0).getDepth());
 
-        // get a list of string of images
-        String[] images = {"11.png", "12.png", "13.png", "14.png"};
         // write the image to the file
-        int width = 256 * 2, height = 256 * 2;
         BufferedImage im = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = im.getGraphics();
         try {
