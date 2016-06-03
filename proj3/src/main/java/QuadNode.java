@@ -2,39 +2,6 @@
  * Created by chizhang on 6/2/16.
  */
 public class QuadNode {
-
-    private class Position {
-        private Double longitude;   // x of axis
-        private Double latitude;    // y of axis
-
-        public Position(double lon, double lat) {
-            this.longitude = lon;
-            this.latitude = lat;
-        }
-
-        public double getLongitude() {
-            return this.longitude;
-        }
-
-        public double getLatitude() {
-            return this.latitude;
-        }
-
-        @Override
-        public int hashCode() {
-            return (int) (31 * longitude + latitude);
-        }
-
-        @Override
-        public boolean equals(Object p) {
-            if (this.getClass() != p.getClass()) {
-                return false;
-            }
-            Position q = (Position) p;
-            return this.longitude.equals(q.getLongitude()) && this.latitude.equals(q.getLatitude());
-        }
-    }
-
     // position
     private Position upperLeftPosition;
     private Position lowerRightPosition;
@@ -45,6 +12,31 @@ public class QuadNode {
     private QuadNode lowerRightChild;  // southeast, denoted as "4"
     // associated picture
     private String picture;   // here we just denote the name as 1, 2, 3, 4 without the IMG_ROOT
+    // the depth of the node
+    private int depth;
 
+    public QuadNode(double ulLon, double ulLat, double lrLon, double lrLat, String picture, int depth) {
+        this.upperLeftPosition = new Position(ulLon, ulLat);
+        this.lowerRightPosition = new Position(lrLon, lrLat);
+        this.picture = picture;
+        this.depth = depth;
+        this.upperLeftChild = null;
+        this.upperRightChild = null;
+        this.lowerLeftChild = null;
+        this.lowerRightChild = null;
+    }
+
+    // child can't be null, return false if setChild failed
+    public boolean setChild(QuadNode child, int direction) {
+        if (child == null) return false;
+        switch (direction) {
+            case 1: this.upperLeftChild = child; break;
+            case 2: this.upperRightChild = child; break;
+            case 3: this.lowerLeftChild = child; break;
+            case 4: this.lowerRightChild = child; break;
+            default: return false;
+        }
+        return true;
+    }
 
 }

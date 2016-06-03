@@ -79,6 +79,8 @@ public class MapServer {
     /* Define any static variables here. Do not define any instance variables of MapServer. */
     private static GraphDB g;
 
+    private static QuadTree qTree;  // construct the QuadTree before asking query to save time
+
     /**
      * Place any initialization statements that will be run before the server main loop here.
      * Do not place it in the main function. Do not place initialization code anywhere else.
@@ -220,7 +222,7 @@ public class MapServer {
      */
     public static Map<String, Object> getMapRaster(Map<String, Double> params, OutputStream os) {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
-
+        
 
         // get a list of string of images
         String[] images = {"11.png", "12.png", "13.png", "14.png"};
