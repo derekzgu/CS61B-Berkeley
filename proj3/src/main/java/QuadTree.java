@@ -1,4 +1,5 @@
 import java.util.ArrayDeque;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -15,6 +16,10 @@ public class QuadTree {
         this.root = bfsConstructor();
     }
 
+    // return a list of String representing imageNames which intersects with the params
+    public String[] bfsTraverse(Map<String, Double> params) {
+        return null;
+    }
 
     // some helper methods
 
@@ -28,8 +33,10 @@ public class QuadTree {
             QuadNode currentNode = frontier.remove();
             // when reach the bottom of the QuadTree
             if (currentNode.getDepth() >= maxDepth) continue;
-            for (int i = 1; i <= 4; i++) {
-                frontier.add(nodeConstructor(currentNode, i));
+            for (int dir = 1; dir <= 4; dir++) {
+                QuadNode child = nodeConstructor(currentNode, dir);
+                currentNode.setChild(child, dir);
+                frontier.add(child);
             }
         }
         return rootNode;
@@ -55,8 +62,8 @@ public class QuadTree {
     }
 
     private String getNextPicture(String parentPic, int direction) {
-        if (parentPic.equals(rootImage)) return Integer.toString(direction);
-        else return parentPic + Integer.toString(direction);
+        if (parentPic.equals(rootImage)) return Integer.toString(direction) + ".png";
+        else return parentPic + Integer.toString(direction) + ".png";
     }
 
 }

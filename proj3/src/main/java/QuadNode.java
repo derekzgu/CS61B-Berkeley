@@ -66,4 +66,14 @@ public class QuadNode {
         return picture;
     }
 
+    public QuadNode getChild(int direction) {
+        switch (direction) {
+            case 1: return upperLeftChild;
+            case 2: return upperRightChild;
+            case 3: return lowerLeftChild;
+            case 4: return lowerRightChild;
+            default: return null;
+        }
+    }
+
 }
