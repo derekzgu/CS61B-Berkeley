@@ -80,6 +80,7 @@ public class MapServer {
     private static GraphDB g;
 
     private static QuadTree qTree;  // construct the QuadTree before asking query to save time
+    private static final int maxDepth = 7;
 
     /**
      * Place any initialization statements that will be run before the server main loop here.
@@ -88,6 +89,7 @@ public class MapServer {
      **/
     public static void initialize() {
         g = new GraphDB(OSM_DB_PATH);
+        qTree = new QuadTree(maxDepth);
     }
 
     public static void main(String[] args) {

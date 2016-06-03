@@ -10,6 +10,11 @@ public class Position {
         this.latitude = latitude;
     }
 
+    public Position(Position p) {
+        this.longitude = p.longitude;
+        this.latitude = p.latitude;
+    }
+
     public double getLongitude() {
         return this.longitude;
     }
@@ -30,5 +35,12 @@ public class Position {
         }
         Position q = (Position) p;
         return this.longitude.equals(q.getLongitude()) && this.latitude.equals(q.getLatitude());
+    }
+
+    // return a new Position, which is the middle of p1 and p2
+    public static Position calculateMiddle(Position p1, Position p2) {
+        double newLon = (p1.getLongitude() + p2.getLongitude()) / 2.0;
+        double newLat = (p1.getLatitude() + p2.getLatitude()) / 2.0;
+        return new Position(newLon, newLat);
     }
 }

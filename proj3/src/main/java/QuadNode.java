@@ -26,6 +26,17 @@ public class QuadNode {
         this.lowerRightChild = null;
     }
 
+    public QuadNode(Position upperLeft, Position lowerRight, String picture, int depth) {
+        this.upperLeftPosition = new Position(upperLeft);
+        this.lowerRightPosition = new Position(lowerRight);
+        this.picture = picture;
+        this.depth = depth;
+        this.upperLeftChild = null;
+        this.upperRightChild = null;
+        this.lowerLeftChild = null;
+        this.lowerRightChild = null;
+    }
+
     // child can't be null, return false if setChild failed
     public boolean setChild(QuadNode child, int direction) {
         if (child == null) return false;
@@ -37,6 +48,22 @@ public class QuadNode {
             default: return false;
         }
         return true;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public Position getUpperLeftPosition() {
+        return new Position(upperLeftPosition);
+    }
+
+    public Position getLowerRightPosition() {
+        return new Position(lowerRightPosition);
+    }
+
+    public String getPicture() {
+        return picture;
     }
 
 }
