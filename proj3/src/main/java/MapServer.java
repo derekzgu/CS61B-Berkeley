@@ -224,7 +224,11 @@ public class MapServer {
      */
     public static Map<String, Object> getMapRaster(Map<String, Double> params, OutputStream os) {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
-        
+        //
+        String[] tests = qTree.respond(params);
+        for (String t : tests) {
+            System.out.println(t);
+        }
 
         // get a list of string of images
         String[] images = {"11.png", "12.png", "13.png", "14.png"};

@@ -43,4 +43,16 @@ public class Position {
         double newLat = (p1.getLatitude() + p2.getLatitude()) / 2.0;
         return new Position(newLon, newLat);
     }
+
+    // return whether two points
+    public static boolean isOverlap(Position p1UpperLeft, Position p1LowerRight,
+                                    Position p2UpperLeft, Position p2LowerRight) {
+        if (p1UpperLeft.getLongitude() > p2LowerRight.getLongitude()
+                || p2UpperLeft.getLongitude() > p1LowerRight.getLongitude())
+            return false;
+        if (p1UpperLeft.getLatitude() < p2LowerRight.getLatitude()
+                || p2UpperLeft.getLatitude() < p1LowerRight.getLatitude())
+            return false;
+        return true;
+    }
 }

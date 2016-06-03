@@ -1,4 +1,6 @@
 import java.util.ArrayDeque;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Queue;
 
@@ -17,11 +19,61 @@ public class QuadTree {
     }
 
     // return a list of String representing imageNames which intersects with the params
-    public String[] bfsTraverse(Map<String, Double> params) {
-        return null;
+    public String[] respond(Map<String, Double> params) {
+        // retrieve the information from params
+        Position queryUpperLeft = new Position(params.get("ullon"), params.get("ullat"));
+        Position queryLowerRight = new Position(params.get("lrlon"), params.get("lrlat"));
+        double userWidthInPixel = params.get("w");
+        double userHeightInPixel = params.get("h");
+        // calculate the query distance/pixel, which is the upper bound of the traverse
+        double queryDistancePerPixel = (queryLowerRight.getLongitude() - queryUpperLeft.getLongitude()) / userWidthInPixel;
+        // calculate the corresponding depth
+        int depth, temp;
+        for (depth = 0; depth <= maxDepth; depth++) {
+            temp = 1;
+            double currentDistancePerPixel = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE / temp;
+            if (currentDistancePerPixel <= queryDistancePerPixel) break;
+            temp *= 2;
+        }
+        // given the depth, find all the tiles which are intersect with query
+        List<QuadNode> result = bfsTraverse(queryUpperLeft, queryLowerRight, depth);
+        String[] images = new String[result.size()];
+        int index = 0;
+        for (QuadNode q : result) {
+            images[index] = q.getPicture();
+            index += 1;
+        }
+        return images;
     }
 
     // some helper methods
+    // traverse the QuadTree and return the correct QuadNode given depth and query Position
+    // when using dfs, the output sequence
+    private List<QuadNode> bfsTraverse(Position queryUpperLeft, Position queryLowerRight, int depth) {
+        assert depth <= maxDepth;
+        Queue<QuadNode> frontier = new ArrayDeque<>();
+        QuadNode rootNode = this.root;
+        List<QuadNode> result = new ArrayList<>();
+        frontier.add(rootNode);
+        while (!frontier.isEmpty()) {
+            QuadNode currentNode = frontier.remove();
+            if (Position.isOverlap(queryUpperLeft, queryLowerRight, currentNode.getUpperLeftPosition(),
+                    currentNode.getLowerRightPosition())) {
+                if (currentNode.getDepth() == depth) {
+                    result.add(currentNode);
+                    continue;
+                }
+                for (int dir = 1; dir <= 4; dir++) {
+                    QuadNode child = currentNode.getChild(dir);
+                    if (Position.isOverlap(queryUpperLeft, queryLowerRight, child.getUpperLeftPosition(),
+                            child.getLowerRightPosition())) {
+                        frontier.add(child);   // add to frontier only overlapped
+                    }
+                }
+            }
+        }
+        return result;
+    }
 
     // construct the QuadTree using bfs, return the root node
     private QuadNode bfsConstructor() {
