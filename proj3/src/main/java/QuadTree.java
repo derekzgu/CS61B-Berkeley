@@ -10,7 +10,7 @@ import java.util.Queue;
 public class QuadTree {
 
     private QuadNode root;  // the root doesn't contain any information
-    private final String rootImage = "root.png";
+    private final String rootImage = "root";
     private int maxDepth;
 
     public QuadTree(int maxDepth) {
@@ -19,38 +19,29 @@ public class QuadTree {
     }
 
     // return a list of String representing imageNames which intersects with the params
-    public String[] respond(Map<String, Double> params) {
+    public List<QuadNode> respond(Map<String, Double> params) {
         // retrieve the information from params
         Position queryUpperLeft = new Position(params.get("ullon"), params.get("ullat"));
         Position queryLowerRight = new Position(params.get("lrlon"), params.get("lrlat"));
         double userWidthInPixel = params.get("w");
-        double userHeightInPixel = params.get("h");
+        // double userHeightInPixel = params.get("h");
         // calculate the query distance/pixel, which is the upper bound of the traverse
         double queryDistancePerPixel = (queryLowerRight.getLongitude() - queryUpperLeft.getLongitude()) / userWidthInPixel;
         // calculate the corresponding depth
         int depth, temp;
-        for (depth = 0; depth <= maxDepth; depth++) {
-            temp = 1;
+        for (depth = 0, temp = 1; depth < maxDepth; depth++, temp*=2) {
             double currentDistancePerPixel = (MapServer.ROOT_LRLON - MapServer.ROOT_ULLON) / MapServer.TILE_SIZE / temp;
             if (currentDistancePerPixel <= queryDistancePerPixel) break;
-            temp *= 2;
         }
         // given the depth, find all the tiles which are intersect with query
-        List<QuadNode> result = bfsTraverse(queryUpperLeft, queryLowerRight, depth);
-        String[] images = new String[result.size()];
-        int index = 0;
-        for (QuadNode q : result) {
-            images[index] = q.getPicture();
-            index += 1;
-        }
-        return images;
+        return bfsTraverse(queryUpperLeft, queryLowerRight, depth);
     }
 
     // some helper methods
     // traverse the QuadTree and return the correct QuadNode given depth and query Position
     // when using dfs, the output sequence
     private List<QuadNode> bfsTraverse(Position queryUpperLeft, Position queryLowerRight, int depth) {
-        assert depth <= maxDepth;
+        if (depth > maxDepth) throw new IllegalArgumentException("depth can't exceed maxDepth/");
         Queue<QuadNode> frontier = new ArrayDeque<>();
         QuadNode rootNode = this.root;
         List<QuadNode> result = new ArrayList<>();
@@ -114,8 +105,8 @@ public class QuadTree {
     }
 
     private String getNextPicture(String parentPic, int direction) {
-        if (parentPic.equals(rootImage)) return Integer.toString(direction) + ".png";
-        else return parentPic + Integer.toString(direction) + ".png";
+        if (parentPic.equals(rootImage)) return Integer.toString(direction);
+        else return parentPic + Integer.toString(direction);
     }
 
 }

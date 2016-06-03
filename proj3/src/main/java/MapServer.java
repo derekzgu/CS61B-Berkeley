@@ -224,11 +224,19 @@ public class MapServer {
      */
     public static Map<String, Object> getMapRaster(Map<String, Double> params, OutputStream os) {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
-        //
-        String[] tests = qTree.respond(params);
+        // collect the result of QuadNode list
+        List<QuadNode> result = qTree.respond(params);
+        String[] tests = new String[result.size()];
+        int index = 0;
+        for (QuadNode q : result) {
+            tests[index] = q.getPicture();
+            index += 1;
+        }
         for (String t : tests) {
             System.out.println(t);
         }
+        System.out.println(params.get("w"));
+        System.out.println(params.get("h"));
 
         // get a list of string of images
         String[] images = {"11.png", "12.png", "13.png", "14.png"};
