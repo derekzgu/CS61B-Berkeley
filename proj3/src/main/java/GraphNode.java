@@ -35,6 +35,13 @@ public class GraphNode {
         return (int) (id ^ (id >>> 32));
     }
 
+    @Override
+    public String toString() {
+        return "GraphNode{" +
+                "id=" + id +
+                '}';
+    }
+
     public void addEdge(GraphEdge e) {
         this.edges.add(e);
     }

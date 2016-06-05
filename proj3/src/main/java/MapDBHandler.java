@@ -3,10 +3,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 /**
  *  Parses OSM XML files using an XML SAX parser. Used to construct the graph of roads for
@@ -36,7 +33,7 @@ public class MapDBHandler extends DefaultHandler {
     private Queue<Long> tempNodeIdOnWay;
 
     public MapDBHandler(GraphDB g) {
-        this.tempNodeIdOnWay = new ArrayQueue<>();
+        this.tempNodeIdOnWay = new ArrayDeque<>();
         this.g = g;
     }
 
@@ -68,6 +65,7 @@ public class MapDBHandler extends DefaultHandler {
 
         } else if (qName.equals("way")) {  // all the node has to be parsed before start parsing way
             activeState = "way";
+            this.tempNodeIdOnWay.clear();
 //            System.out.println("Beginning a way...");
         } else if (activeState.equals("way") && qName.equals("nd")) {
             this.tempNodeIdOnWay.add(Long.parseLong(attributes.getValue("ref")));

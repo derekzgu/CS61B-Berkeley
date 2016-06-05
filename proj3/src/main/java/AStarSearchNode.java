@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -10,16 +10,23 @@ public class AStarSearchNode implements Comparable<AStarSearchNode> {
     private Double currentRouteLength;
     private GraphNode target;
     private Double priority;
+    private LinkedList<Long> route;
 
-    public AStarSearchNode(GraphNode n, Double currentRouteLength, GraphNode target) {
+    public AStarSearchNode(GraphNode n, Double currentRouteLength, GraphNode target, List<Long> parentRoute) {
         this.currentNode = n;
         this.currentRouteLength = currentRouteLength; // for UCS
         this.target = target;
         this.priority = Position.euclideanDistance(n.getPosition(), target.getPosition()) + currentRouteLength;
+        if (parentRoute != null) {
+            this.route = new LinkedList<>(parentRoute);
+        } else {
+            this.route = new LinkedList<>();
+        }
+        this.route.add(n.getId());
     }
 
     public AStarSearchNode(GraphNode n, GraphNode target) {   // this constructor is used for root node
-        this(n, 0.0, target);
+        this(n, 0.0, target, null);
     }
 
     public GraphNode getNode() {
@@ -34,17 +41,29 @@ public class AStarSearchNode implements Comparable<AStarSearchNode> {
         return currentRouteLength;
     }
 
+    public LinkedList<Long> getRoute() {
+        return route;
+    }
+
     @Override
     public int compareTo(AStarSearchNode n) {
         return this.getPriority().compareTo(n.getPriority());
     }
 
+    @Override
+    public String toString() {
+        return "AStarSearchNode{" +
+                "currentNode=" + currentNode +
+                ", currentRouteLength=" + currentRouteLength +
+                '}';
+    }
+
     public Iterable<AStarSearchNode> getSuccessor() {
         Iterable<GraphNode> neighborNodes = this.currentNode.getNeighbors();
-        List<AStarSearchNode> successors = new ArrayList<>();
+        List<AStarSearchNode> successors = new LinkedList<>();
         for (GraphNode n : neighborNodes) {
             double distance = Position.euclideanDistance(n.getPosition(), this.currentNode.getPosition());
-            successors.add(new AStarSearchNode(n, this.getCurrentRouteLength() + distance, this.target));
+            successors.add(new AStarSearchNode(n, this.getCurrentRouteLength() + distance, this.target, this.getRoute()));
         }
         return successors;
     }

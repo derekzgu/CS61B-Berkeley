@@ -296,7 +296,6 @@ public class MapServer {
         GraphNode startNode = g.getClosestNode(start);
         GraphNode endNode = g.getClosestNode(end);
         // it should follow the basic rule of A* search, use Euclidean distance as heuristic
-        LinkedList<Long> result = new LinkedList<>();
         Set<Long> exploredSet = new HashSet<>();
         PriorityQueue<AStarSearchNode> frontier = new PriorityQueue<>();
         frontier.add(new AStarSearchNode(startNode, endNode));
@@ -306,12 +305,11 @@ public class MapServer {
             if (exploredSet.contains(currentSearchNode.getNode().getId())) continue;
             // if the remove node is goal
             if (currentSearchNode.isGoal()) {
-                result.add(currentSearchNode.getNode().getId());
+                return currentSearchNode.getRoute();
             }
             // add currentSearchNode to exploredSet
             exploredSet.add(currentSearchNode.getNode().getId());
             // add it to the result
-            result.add(currentSearchNode.getNode().getId());
             Iterable<AStarSearchNode> neighbors = currentSearchNode.getSuccessor();
             for (AStarSearchNode a : neighbors) {
                 if (!exploredSet.contains(a.getNode().getId())) {
@@ -319,8 +317,8 @@ public class MapServer {
                 }
             }
         }
-
-        return result;
+        // can't find a route
+        return null;
     }
 
     /**
