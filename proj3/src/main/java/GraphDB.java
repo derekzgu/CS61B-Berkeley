@@ -12,6 +12,7 @@ import javax.xml.parsers.SAXParserFactory;
  * @author Alan Yao
  */
 public class GraphDB {
+    
     /**
      * Example constructor shows how to create and start an XML parser.
      * @param db_path Path to the XML file to be parsed.

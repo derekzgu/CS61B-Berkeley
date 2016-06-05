@@ -5,6 +5,11 @@ public class Position implements Comparable<Position> {
     private Double longitude;   // x of axis
     private Double latitude;    // y of axis
 
+    // the default place is (0, 0)
+    public Position() {
+        this(0, 0);
+    }
+
     public Position(double longitude, double latitude) {
         this.longitude = longitude;
         this.latitude = latitude;

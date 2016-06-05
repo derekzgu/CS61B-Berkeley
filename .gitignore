@@ -2,7 +2,8 @@
 .DS_Store
 node_modules/
 .ropeproject
-lectureCode-sp16-master/*
+lectureCode-sp16-master/
+*.swp
 # Created by https://www.gitignore.io/api/java,python,osx,windows,intellij,eclipse,bluej,netbeans,vim,emacs,microsoftoffice
 
 ### Java ###

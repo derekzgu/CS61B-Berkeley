@@ -226,12 +226,6 @@ public class MapServer {
         HashMap<String, Object> rasteredImageParams = new HashMap<>();
         // collect the result of QuadNode list in sorted order
         List<QuadNode> result = qTree.respond(params);
-        String[] images = new String[result.size()];
-        int index = 0;
-        for (QuadNode q : result) {
-            images[index] = q.getPicture() + ".png";
-            index += 1;
-        }
         // get rastered image boundary
         Position rasterUpperLeft = result.get(0).getUpperLeftPosition();
         Position rasterLoweRight = result.get(result.size() - 1).getLowerRightPosition();
@@ -246,6 +240,7 @@ public class MapServer {
                 break;
         }
         assert result.size() % i == 0;
+        if (result.size() % i != 0) System.out.println("The result raster picture size is not correct.");
         int width = TILE_SIZE * i, height = TILE_SIZE * result.size() / i;
         rasteredImageParams.put("raster_width", width);
         rasteredImageParams.put("raster_height", height);
@@ -253,6 +248,12 @@ public class MapServer {
         rasteredImageParams.put("depth", result.get(0).getDepth());
 
         // write the image to the file
+        String[] images = new String[result.size()];
+        int index = 0;
+        for (QuadNode q : result) {
+            images[index] = q.getPicture() + ".png";
+            index += 1;
+        }
         BufferedImage im = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = im.getGraphics();
         try {
@@ -270,6 +271,7 @@ public class MapServer {
             rasteredImageParams.put("query_success", true);
         } catch (IOException e) {
             System.out.println("The image is not present in the img/ folder.");
+            rasteredImageParams.put("query_success", false);
         }
 
         return rasteredImageParams;
@@ -287,6 +289,7 @@ public class MapServer {
      * @return A LinkedList of node ids from the start of the route to the end.
      */
     public static LinkedList<Long> findAndSetRoute(Map<String, Double> params) {
+        // it should follow the basic rule of A* search, use Euclidean distance as heuristic
         return new LinkedList<>();
     }
 
@@ -294,6 +297,7 @@ public class MapServer {
      * Clear the current found route, if it exists.
      */
     public static void clearRoute() {
+        // it should clear the result and drawing
     }
 
     /**

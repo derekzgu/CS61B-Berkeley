@@ -55,11 +55,16 @@ public class MapDBHandler extends DefaultHandler {
         /* Some example code on how you might begin to parse XML files. */
         if (qName.equals("node")) {
             activeState = "node";
+            String id = attributes.getValue("id");
+            String lon = attributes.getValue("lon");
+            String lat = attributes.getValue("lat");
         } else if (qName.equals("way")) {
             activeState = "way";
 //            System.out.println("Beginning a way...");
         } else if (activeState.equals("way") && qName.equals("tag")) {
+            // get the key of a way attribute
             String k = attributes.getValue("k");
+            // get the value of a way attribute
             String v = attributes.getValue("v");
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
