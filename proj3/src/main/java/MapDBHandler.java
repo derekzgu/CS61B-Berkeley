@@ -112,9 +112,4 @@ public class MapDBHandler extends DefaultHandler {
         }
     }
 
-    // for trivial tests
-    public static void main(String[] args) {
-
-    }
-
 }
