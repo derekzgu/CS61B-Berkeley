@@ -77,6 +77,7 @@ public class MapServer {
 
     private static QuadTree qTree;  // construct the QuadTree before asking query to save time
     private static final int maxDepth = 7;
+    private static LinkedList<GraphNode> route;
 
     /**
      * Place any initialization statements that will be run before the server main loop here.
@@ -84,6 +85,7 @@ public class MapServer {
      * This is for testing purposes, and you may fail tests otherwise.
      **/
     public static void initialize() {
+        route = null;
         g = new GraphDB(OSM_DB_PATH);
         qTree = new QuadTree(maxDepth);
     }
@@ -253,6 +255,7 @@ public class MapServer {
         BufferedImage im = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = im.getGraphics();
         try {
+            // draw the map
             int x = 0, y = 0;
             for (String image : images) {
                 BufferedImage bi = ImageIO.read(new File(IMG_ROOT + image));
@@ -263,14 +266,48 @@ public class MapServer {
                     y += bi.getHeight();
                 }
             }
-            ImageIO.write(im, "png", os);
             rasteredImageParams.put("query_success", true);
+            // draw the route
+            if (route != null) {
+                Stroke s = new BasicStroke(MapServer.ROUTE_STROKE_WIDTH_PX,
+                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+                ((Graphics2D) g).setStroke(s);
+                g.setColor(MapServer.ROUTE_STROKE_COLOR);
+                GraphNode previous = null;
+                for (GraphNode n : route) {
+                    if (previous != null) {
+                        // calculate the relative coordination
+                        int x1 = getRelativeX(previous, rasterUpperLeft.getLongitude(),
+                                rasterLoweRight.getLongitude(), width);
+                        int y1 = getRelativeY(previous, rasterUpperLeft.getLatitude(),
+                                rasterLoweRight.getLatitude(), height);
+                        int x2 = getRelativeX(n, rasterUpperLeft.getLongitude(),
+                                rasterLoweRight.getLongitude(), width);
+                        int y2 = getRelativeY(n, rasterUpperLeft.getLatitude(),
+                                rasterLoweRight.getLatitude(), height);
+                        g.drawLine(x1, y1, x2, y2);
+                    }
+                    previous = n;
+                }
+            }
+            ImageIO.write(im, "png", os); // write the image to os
         } catch (IOException e) {
             System.out.println("The image is not present in the img/ folder.");
             rasteredImageParams.put("query_success", false);
         }
 
         return rasteredImageParams;
+    }
+
+    // transform the graph (lon, lat) to relative x pixel
+    private static int getRelativeX(GraphNode n, double raster_ul_lon, double raster_lr_lon, int width) {
+        double lonPerPixel = (raster_lr_lon - raster_ul_lon) / width;
+        return (int) ((n.getPosition().getLongitude() - raster_ul_lon) / lonPerPixel);
+    }
+
+    private static int getRelativeY(GraphNode n, double raster_ul_lat, double raster_lr_lat, int height) {
+        double latPerPixel = (raster_lr_lat - raster_ul_lat) / height;
+        return (int) ((n.getPosition().getLatitude() - raster_ul_lat) / latPerPixel);
     }
 
     /**
@@ -285,6 +322,17 @@ public class MapServer {
      * @return A LinkedList of node ids from the start of the route to the end.
      */
     public static LinkedList<Long> findAndSetRoute(Map<String, Double> params) {
+        // find route, which is a LinkedList of GraphNodes
+        route = findRoute(params);
+        // draw the route should happen inside getMapRaster method!
+        LinkedList<Long> routeInId = new LinkedList<>();
+        for (GraphNode n : route) {
+            routeInId.add(n.getId());
+        }
+        return routeInId;
+    }
+
+    private static LinkedList<GraphNode> findRoute(Map<String, Double> params) {
         // get the query
         double start_lon = params.get("start_lon");
         double start_lat = params.get("start_lat");
@@ -296,23 +344,23 @@ public class MapServer {
         GraphNode startNode = g.getClosestNode(start);
         GraphNode endNode = g.getClosestNode(end);
         // it should follow the basic rule of A* search, use Euclidean distance as heuristic
-        Set<Long> exploredSet = new HashSet<>();
+        Set<GraphNode> exploredSet = new HashSet<>();
         PriorityQueue<AStarSearchNode> frontier = new PriorityQueue<>();
         frontier.add(new AStarSearchNode(startNode, endNode));
 
         while (!frontier.isEmpty()) {
             AStarSearchNode currentSearchNode = frontier.remove();
-            if (exploredSet.contains(currentSearchNode.getNode().getId())) continue;
+            if (exploredSet.contains(currentSearchNode.getNode())) continue;
             // if the remove node is goal
             if (currentSearchNode.isGoal()) {
                 return currentSearchNode.getRoute();
             }
             // add currentSearchNode to exploredSet
-            exploredSet.add(currentSearchNode.getNode().getId());
+            exploredSet.add(currentSearchNode.getNode());
             // add it to the result
             Iterable<AStarSearchNode> neighbors = currentSearchNode.getSuccessor();
             for (AStarSearchNode a : neighbors) {
-                if (!exploredSet.contains(a.getNode().getId())) {
+                if (!exploredSet.contains(a.getNode())) {
                     frontier.add(a);
                 }
             }
@@ -326,6 +374,7 @@ public class MapServer {
      */
     public static void clearRoute() {
         // it should clear the result and drawing
+        route = null;
     }
 
     /**

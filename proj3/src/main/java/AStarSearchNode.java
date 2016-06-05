@@ -10,9 +10,9 @@ public class AStarSearchNode implements Comparable<AStarSearchNode> {
     private Double currentRouteLength;
     private GraphNode target;
     private Double priority;
-    private LinkedList<Long> route;
+    private LinkedList<GraphNode> route;
 
-    public AStarSearchNode(GraphNode n, Double currentRouteLength, GraphNode target, List<Long> parentRoute) {
+    public AStarSearchNode(GraphNode n, Double currentRouteLength, GraphNode target, LinkedList<GraphNode> parentRoute) {
         this.currentNode = n;
         this.currentRouteLength = currentRouteLength; // for UCS
         this.target = target;
@@ -22,7 +22,7 @@ public class AStarSearchNode implements Comparable<AStarSearchNode> {
         } else {
             this.route = new LinkedList<>();
         }
-        this.route.add(n.getId());
+        this.route.add(n);
     }
 
     public AStarSearchNode(GraphNode n, GraphNode target) {   // this constructor is used for root node
@@ -41,7 +41,7 @@ public class AStarSearchNode implements Comparable<AStarSearchNode> {
         return currentRouteLength;
     }
 
-    public LinkedList<Long> getRoute() {
+    public LinkedList<GraphNode> getRoute() {
         return route;
     }
 
