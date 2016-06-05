@@ -28,25 +28,18 @@ public class Position implements Comparable<Position> {
         return this.latitude;
     }
 
-    @Override
-    public int hashCode() {
-        return (int) (31 * longitude + latitude);
-    }
-
-    @Override
-    public boolean equals(Object p) {
-        if (this.getClass() != p.getClass()) {
-            return false;
-        }
-        Position q = (Position) p;
-        return this.longitude.equals(q.getLongitude()) && this.latitude.equals(q.getLatitude());
-    }
-
     // return a new Position, which is the middle of p1 and p2
     public static Position calculateMiddle(Position p1, Position p2) {
         double newLon = (p1.getLongitude() + p2.getLongitude()) / 2.0;
         double newLat = (p1.getLatitude() + p2.getLatitude()) / 2.0;
         return new Position(newLon, newLat);
+    }
+
+    // return the euclidean distance of two position
+    public static double euclideanDistance(Position p1, Position p2) {
+        double temp1 = p1.getLongitude() - p2.getLongitude();
+        double temp2 = p1.getLatitude() - p2.getLatitude();
+        return Math.sqrt(temp1 * temp1 + temp2 * temp2);
     }
 
     // return whether two points
@@ -77,5 +70,19 @@ public class Position implements Comparable<Position> {
             else if (lonDifference > 0) return 1;
             else return 0;
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (31 * longitude + latitude);
+    }
+
+    @Override
+    public boolean equals(Object p) {
+        if (this.getClass() != p.getClass()) {
+            return false;
+        }
+        Position q = (Position) p;
+        return this.longitude.equals(q.getLongitude()) && this.latitude.equals(q.getLatitude());
     }
 }

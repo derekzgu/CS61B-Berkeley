@@ -1,9 +1,11 @@
+import org.eclipse.jetty.util.ArrayQueue;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -30,8 +32,11 @@ public class MapDBHandler extends DefaultHandler {
                     "secondary_link", "tertiary_link"));
     private String activeState = "";
     private final GraphDB g;
+    private long currentId = 0;
+    private Queue<Long> tempNodeIdOnWay;
 
     public MapDBHandler(GraphDB g) {
+        this.tempNodeIdOnWay = new ArrayQueue<>();
         this.g = g;
     }
 
@@ -55,21 +60,39 @@ public class MapDBHandler extends DefaultHandler {
         /* Some example code on how you might begin to parse XML files. */
         if (qName.equals("node")) {
             activeState = "node";
-            String id = attributes.getValue("id");
-            String lon = attributes.getValue("lon");
-            String lat = attributes.getValue("lat");
-        } else if (qName.equals("way")) {
+            long id = Long.parseLong(attributes.getValue("id")); // id should be long
+            double lon = Double.parseDouble(attributes.getValue("lon"));
+            double lat = Double.parseDouble(attributes.getValue("lat"));
+            this.g.addNode(id, new GraphNode(lon, lat, id));
+            currentId = id;
+
+        } else if (qName.equals("way")) {  // all the node has to be parsed before start parsing way
             activeState = "way";
 //            System.out.println("Beginning a way...");
+        } else if (activeState.equals("way") && qName.equals("nd")) {
+            this.tempNodeIdOnWay.add(Long.parseLong(attributes.getValue("ref")));
+
         } else if (activeState.equals("way") && qName.equals("tag")) {
             // get the key of a way attribute
             String k = attributes.getValue("k");
             // get the value of a way attribute
             String v = attributes.getValue("v");
 //            System.out.println("Tag with k=" + k + ", v=" + v + ".");
+            if (k.equals("highway") && ALLOWED_HIGHWAY_TYPES.contains(v)) {
+                long id1 = this.tempNodeIdOnWay.remove();
+                while (!this.tempNodeIdOnWay.isEmpty()) {
+                    long id2 = this.tempNodeIdOnWay.remove();
+                    this.g.addEdge(id1, id2);
+                    id1 = id2;
+                }
+                activeState = "";
+            }
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
 //            System.out.println("Node with name: " + attributes.getValue("v"));
+            this.g.getNode(currentId).setName(GraphDB.cleanString(attributes.getValue("v")));
+            activeState = "";
+            currentId = 0;
         }
     }
 
@@ -89,6 +112,11 @@ public class MapDBHandler extends DefaultHandler {
         if (qName.equals("way")) {
 //            System.out.println("Finishing a way...");
         }
+    }
+
+    // for trivial tests
+    public static void main(String[] args) {
+
     }
 
 }
