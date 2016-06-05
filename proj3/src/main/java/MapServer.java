@@ -4,12 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /* Maven is used to pull in these dependencies. */
 import com.google.gson.Gson;
@@ -289,8 +285,20 @@ public class MapServer {
      * @return A LinkedList of node ids from the start of the route to the end.
      */
     public static LinkedList<Long> findAndSetRoute(Map<String, Double> params) {
+        // get the query
+        double start_lon = params.get("start_lon");
+        double start_lat = params.get("start_lat");
+        double end_lon = params.get("end_lon");
+        double end_lat = params.get("end_lat");
+        Position start = new Position(start_lon, start_lat);
+        Position end = new Position(end_lon, end_lat);
+        // find the start and end GraphNode
+        GraphNode startNode = g.getClosestNode(start);
+        GraphNode endNode = g.getClosestNode(end);
         // it should follow the basic rule of A* search, use Euclidean distance as heuristic
-        return new LinkedList<>();
+        List<Long> result = new LinkedList<>();
+        Set<Long> exploredSet = new HashSet<>();
+        return null;
     }
 
     /**

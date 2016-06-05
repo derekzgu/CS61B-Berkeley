@@ -58,7 +58,16 @@ public class GraphDB {
     }
 
     public GraphNode getClosestNode(Position p) {
-
+        double minDistance = Integer.MAX_VALUE;
+        GraphNode target = null;
+        for (Map.Entry<Long, GraphNode> entry : this.nodeMap.entrySet()) {
+            double currentDistance = Position.euclideanDistance(entry.getValue().getPosition(), p);
+            if (currentDistance < minDistance) {
+                target = entry.getValue();
+                minDistance = currentDistance;
+            }
+        }
+        return target;
     }
 
     /**
