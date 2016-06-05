@@ -15,4 +15,10 @@ public class GraphEdge {  // only constructed when encounter ways, we assume it 
     public double getDistance() {
         return Position.euclideanDistance(n1.getPosition(), n2.getPosition());
     }
+
+    public GraphNode getOtherNode(GraphNode n) {
+        if (n.equals(n1)) return n2;
+        else if (n.equals(n2)) return n1;
+        else return null;
+    }
 }

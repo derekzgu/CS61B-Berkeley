@@ -1,5 +1,4 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by chizhang on 6/4/16.
@@ -20,6 +19,22 @@ public class GraphNode {
         this.name = "";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GraphNode graphNode = (GraphNode) o;
+
+        return id == graphNode.id;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (id ^ (id >>> 32));
+    }
+
     public void addEdge(GraphEdge e) {
         this.edges.add(e);
     }
@@ -34,6 +49,15 @@ public class GraphNode {
 
     public boolean hasNeighbor() {
         return this.edges.size() != 0;
+    }
+
+    // return an iterable containing all the neighbors of the current node
+    public Iterable<GraphNode> getNeighbors() {
+        List<GraphNode> neighborList = new ArrayList<>();
+        for (GraphEdge e : edges) {
+            neighborList.add(e.getOtherNode(this));
+        }
+        return neighborList;
     }
 
     public Position getPosition() {
