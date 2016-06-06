@@ -26,7 +26,7 @@ public class AGMapServerTest {
     public void setUp() throws Exception {
         if (initialized) return;
         MapServer.initialize();
-        FileInputStream fis = new FileInputStream("test_ser_data");
+        FileInputStream fis = new FileInputStream("test_data_v2");
         ObjectInputStream ois = new ObjectInputStream(fis);
         params = (List<TestParams>) ois.readObject();
         ois.close();
