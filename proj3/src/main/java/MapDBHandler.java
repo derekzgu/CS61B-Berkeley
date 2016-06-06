@@ -29,7 +29,7 @@ public class MapDBHandler extends DefaultHandler {
                     "secondary_link", "tertiary_link"));
     private String activeState = "";
     private final GraphDB g;
-    private long currentId = 0;
+    private GraphNode currentGraphNode = null;
     private Queue<Long> tempNodeIdOnWay;
 
     public MapDBHandler(GraphDB g) {
@@ -60,8 +60,8 @@ public class MapDBHandler extends DefaultHandler {
             long id = Long.parseLong(attributes.getValue("id")); // id should be long
             double lon = Double.parseDouble(attributes.getValue("lon"));
             double lat = Double.parseDouble(attributes.getValue("lat"));
-            this.g.addNode(id, new GraphNode(lon, lat, id));
-            currentId = id;
+            currentGraphNode = new GraphNode(lon, lat, id);
+            this.g.addNode(id, currentGraphNode);
 
         } else if (qName.equals("way")) {  // all the node has to be parsed before start parsing way
             activeState = "way";
@@ -88,9 +88,12 @@ public class MapDBHandler extends DefaultHandler {
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")
                 .equals("name")) {
 //            System.out.println("Node with name: " + attributes.getValue("v"));
-            this.g.getNode(currentId).setName(GraphDB.cleanString(attributes.getValue("v")));
+            String cleanName = GraphDB.cleanString(attributes.getValue("v"));
+            this.currentGraphNode.setName(attributes.getValue("v"));
             activeState = "";
-            currentId = 0;
+            // we should construct a trie along the way
+            this.g.insertByName(cleanName, currentGraphNode);
+            currentGraphNode = null;
         }
     }
 

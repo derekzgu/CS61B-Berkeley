@@ -2,10 +2,7 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -20,12 +17,14 @@ public class GraphDB {
     // a graph is a map from id to GraphNode
 
     private Map<Long, GraphNode> nodeMap;
+    private Trie locations;
     /**
      * Example constructor shows how to create and start an XML parser.
      * @param db_path Path to the XML file to be parsed.
      */
     public GraphDB(String db_path) {
         nodeMap = new HashMap<>();
+        locations = new Trie();
         try {
             File inputFile = new File(db_path);
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -68,6 +67,20 @@ public class GraphDB {
             }
         }
         return target;
+    }
+
+    // insert by name to the locations (Trie), each TrieNode contains a list of GraphNodes
+    public void insertByName(String name, GraphNode n) {
+        this.locations.insert(name, n);
+    }
+
+    public List<String> getLocationsByPrefix(String prefix) {
+        return this.locations.getNamesByPrefix(prefix);
+    }
+
+    public List<GraphNode> getListGraphNodeByName(String locationName) {
+        TrieNode n = this.locations.searchNode(locationName);
+        return n.getGraphNodes();
     }
 
     /**

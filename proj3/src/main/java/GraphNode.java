@@ -50,6 +50,10 @@ public class GraphNode {
         this.name = name;
     }
 
+    public String getName() {
+        return this.name;
+    }
+
     public boolean hasName() {
         return this.name.length() != 0;
     }
